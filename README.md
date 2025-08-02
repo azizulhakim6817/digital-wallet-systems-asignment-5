@@ -4,7 +4,7 @@ Backend Live Link URL:
 Github Live Link URL :
 => https://github.com/azizulhakim6817/digital-wallet-systems-asignment-5
 
-Video link : 
+Video link (YouTub) : https://www.youtube.com/watch?v=15t1QJ1rtww
 
 ### Digital Wallet API :
 ### 📄 Project Overview :
