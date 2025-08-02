@@ -1,3 +1,11 @@
+Backend Live Link URL:
+=> https://digital-wallet-systems-asignment-5.vercel.app/getUser
+
+Github Live Link URL :
+=> https://github.com/azizulhakim6817/digital-wallet-systems-asignment-5
+
+Video link : 
+
 ### Digital Wallet API :
 ### 📄 Project Overview :
 This project implements a Digital Wallet API system, which includes functionality like user registration, wallet management, transaction processing (deposit, withdraw, send), and role-based access control (admin, user, agent). The system supports JWT authentication, secure password hashing, and transaction tracking.
