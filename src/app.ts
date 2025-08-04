@@ -6,6 +6,7 @@ import { authRoute } from "./routes/auth.routes";
 import { tarnsactionRoute } from "./routes/transaction.routes";
 import { adminRoute } from "./routes/admin.routes";
 
+
 const app = express();
 app.use(
   cors({
