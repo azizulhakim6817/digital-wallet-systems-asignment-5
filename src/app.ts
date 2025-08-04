@@ -5,6 +5,7 @@ import { walletRoute } from "./routes/wallet.route";
 import { authRoute } from "./routes/auth.routes";
 import { tarnsactionRoute } from "./routes/transaction.routes";
 import { adminRoute } from "./routes/admin.routes";
+import { userhRoute } from "./routes/user.routes";
 
 
 const app = express();
@@ -17,9 +18,10 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/admin", adminRoute);
-app.use("/api/auth", authRoute);
-app.use("/api/wallet", walletRoute);
-app.use("/api/transactions", tarnsactionRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/user", userhRoute);
+app.use("/api/v1/admin", adminRoute);
+app.use("/api/v1/wallet", walletRoute);
+app.use("/api/v1transactions", tarnsactionRoute);
 
 export default app;

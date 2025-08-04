@@ -1,61 +1,41 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../user/user.model";
+import { User } from "../user/user.model";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt";
 
 export const registerUser = async (email: string, password: string) => {
   const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new Error("User already exists");
-  }
+  if (existingUser) throw new Error("User already exists");
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({
-    email,
-    password: hashedPassword,
-  });
-
+  const user = new User({ email, password: hashedPassword });
   await user.save();
 
-  const accessToken = generateAccessToken((user._id as any).toString());
-  const refreshToken = generateRefreshToken((user._id as any).toString());
-
-  return { user, accessToken, refreshToken };
+  return { user };
 };
 
 export const loginUser = async (email: string, password: string) => {
   const user = await User.findOne({ email });
-  if (!user) {
-    throw new Error("Invalid credentials");
-  }
+  if (!user) throw new Error("Invalid credentials");
 
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
-    throw new Error("Invalid credentials");
-  }
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) throw new Error("Invalid credentials");
 
-const accessToken = generateAccessToken((user._id as any).toString());
-const refreshToken = generateRefreshToken((user._id as any).toString());
+  const accessToken = generateAccessToken(user._id.toString());
+  const refreshToken = generateRefreshToken(user._id.toString());
 
   return { accessToken, refreshToken };
 };
 
-export const verifyRefreshToken = (refreshToken: string) => {
+export const verifyRefreshToken = (token: string) => {
   return new Promise<string>((resolve, reject) => {
     jwt.verify(
-      refreshToken,
+      token,
       process.env.JWT_REFRESH_SECRET as string,
       (err, decoded) => {
-        if (err) {
-          reject(new Error("Invalid refresh token"));
-        } else {
-          resolve((decoded as any).userId);
-        }
+        if (err) reject("Invalid token");
+        else resolve((decoded as any).userId);
       }
     );
   });
-};
-
-export const logoutUser = () => {
-  return "Logged out successfully";
 };

@@ -7,6 +7,7 @@ import {
 
 const router = express.Router();
 
+// Admin routes
 router.get("/users", getAllUsers);
 router.get("/transactions", getAllTransactions);
 router.get("/stats", getSystemStats);

@@ -12,14 +12,14 @@ const UserSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    name: {
+      type: String,
+      required: false,
+    },
     role: {
       type: String,
       enum: ["user", "agent", "admin"],
       default: "user",
-    },
-    name: {
-      type: String,
-      required: true,
     },
   },
   { timestamps: true }
