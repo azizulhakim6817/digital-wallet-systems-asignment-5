@@ -1,63 +1,22 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt";
 import { User } from "./user.model";
-import { ObjectId } from "mongoose";
 
-export const registerUser = async (email: string, password: string) => {
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new Error("User already exists");
-  }
+export const UserService = {
+  getAllUsers: async () => {
+    return await User.find();
+  },
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({
-    email,
-    password: hashedPassword,
-  });
+  getSingleUser: async (id: string) => {
+    return await User.findById(id);
+  },
 
-  await user.save();
+  updateUser: async (
+    id: string,
+    data: Partial<{ email: string; password: string; role: string }>
+  ) => {
+    return await User.findByIdAndUpdate(id, data, { new: true });
+  },
 
- const accessToken = generateAccessToken((user._id as ObjectId).toString());
-const refreshToken = generateRefreshToken((user._id as ObjectId).toString());
-
-  return { user, accessToken, refreshToken };
-};
-
-export const loginUser = async (email: string, password: string) => {
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new Error("Invalid credentials");
-  }
-
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
-    throw new Error("Invalid credentials");
-  }
-
-const accessToken = generateAccessToken((user._id as ObjectId).toString());
-const refreshToken = generateRefreshToken((user._id as ObjectId).toString());
-
-  return { accessToken, refreshToken };
-};
-
-export const verifyRefreshToken = (refreshToken: string) => {
-  return new Promise<string>((resolve, reject) => {
-    jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET as string,
-      (err, decoded) => {
-        if (err) {
-          reject(new Error("Invalid refresh token"));
-        } else {
-          resolve((decoded as any).userId);
-        }
-      }
-    );
-  });
-};
-
-export const logoutUser = () => {
-  return "Logged out successfully";
+  deleteUser: async (id: string) => {
+    return await User.findByIdAndDelete(id);
+  },
 };

@@ -1,16 +1,17 @@
 import express from "express";
 import {
-  register,
-  login,
-  refreshToken,
-  logout,
+  getAllUsers,
+  getSingleUser,
+  updateUser,
+  deleteUser,
 } from "../modules/user/user.controller";
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/refresh-token", refreshToken);
-router.post("/logout", logout);
+router.get("/getUser", getAllUsers);
+router.get("/:id", getSingleUser);
+router.patch("/:id", updateUser);
+router.delete("/:id", deleteUser);
+export default router;
 
 export const userhRoute = router;

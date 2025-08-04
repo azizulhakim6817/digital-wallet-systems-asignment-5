@@ -1,7 +1,10 @@
-export interface IUser {
-  _id?: string;
+import { Document } from "mongoose";
+
+export interface IUser extends Document {
   email: string;
   password: string;
   name?: string;
-  role?: "user" | "agent" | "admin";
+  role: "user" | "agent" | "admin";
+  createdAt?: Date;
+  updatedAt?: Date;
 }

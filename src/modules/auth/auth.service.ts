@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../user/user.model";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt";
+import { Types } from "mongoose";
 
 export const registerUser = async (email: string, password: string) => {
   const existingUser = await User.findOne({ email });
@@ -21,8 +22,13 @@ export const loginUser = async (email: string, password: string) => {
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) throw new Error("Invalid credentials");
 
-  const accessToken = generateAccessToken(user._id.toString());
-  const refreshToken = generateRefreshToken(user._id.toString());
+  const accessToken = generateAccessToken(
+    (user._id as Types.ObjectId).toString()
+  );
+
+  const refreshToken = generateRefreshToken(
+    (user._id as Types.ObjectId).toString()
+  );
 
   return { accessToken, refreshToken };
 };

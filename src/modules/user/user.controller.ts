@@ -1,80 +1,43 @@
 import { Request, Response } from "express";
-import {
-  registerUser,
-  loginUser,
-  verifyRefreshToken,
-  logoutUser,
-} from "./user.service";
-import { generateAccessToken } from "../../utils/jwt";
+import { UserService } from "./user.service";
 
-export const register = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
+export const getAllUsers = async (_req: Request, res: Response) => {
   try {
-    const { user, accessToken, refreshToken } = await registerUser(
-      email,
-      password
-    );
-
-    // Store refresh token in HttpOnly cookie
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    return res.status(201).json({
-      accessToken,
-    });
+    const users = await UserService.getAllUsers();
+    res.status(200).json(users);
   } catch (error) {
-     const e = error as Error;
-  return res.status(500).json({ message: e.message });
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 };
 
-export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
+export const getSingleUser = async (req: Request, res: Response) => {
   try {
-    const { accessToken, refreshToken } = await loginUser(email, password);
-
-    // Store refresh token in HttpOnly cookie
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    return res.status(200).json({
-      accessToken,
-    });
+    const user = await UserService.getSingleUser(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json(user);
   } catch (error) {
-      const e = error as Error;
-  return res.status(500).json({ message: e.message });
+    res.status(500).json({ message: "Failed to fetch user" });
   }
 };
 
-export const refreshToken = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refresh_token;
-
-  if (!refreshToken) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-
+export const updateUser = async (req: Request, res: Response) => {
   try {
-    const userId = await verifyRefreshToken(refreshToken);
-    const accessToken = generateAccessToken(userId);
-
-    return res.status(200).json({
-      accessToken,
-    });
+    const updatedUser = await UserService.updateUser(req.params.id, req.body);
+    if (!updatedUser)
+      return res.status(404).json({ message: "User not found" });
+    res.status(200).json(updatedUser);
   } catch (error) {
-     const e = error as Error;
-  return res.status(500).json({ message: e.message });
+    res.status(500).json({ message: "Failed to update user" });
   }
 };
 
-export const logout = (req: Request, res: Response) => {
-  res.clearCookie("refresh_token");
-  return res.status(200).json({ message: logoutUser() });
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const deletedUser = await UserService.deleteUser(req.params.id);
+    if (!deletedUser)
+      return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete user" });
+  }
 };
