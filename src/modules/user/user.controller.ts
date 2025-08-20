@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
-import { UserService } from "./user.service";
 
-export const getAllUsers = async (_req: Request, res: Response) => {
+import { IChangePasswordBody } from "./user.interface";
+import { User } from "./user.model";
+import { changePasswordService, UserService } from "./user.service";
+
+export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await UserService.getAllUsers();
-    res.status(200).json(users);
+    const users = await User.find();
+    res.json(users);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch users" });
+    res.status(500).json({ message: 'Something went wrong' });
   }
 };
 
@@ -39,5 +42,29 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete user" });
+  }
+};
+
+// !changePassword-----------------------------------------------------------
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const { oldPassword, newPassword } = req.body as IChangePasswordBody;
+   const { _id: userId } = req.user!;
+    const result = await changePasswordService(
+      userId,
+      oldPassword,
+      newPassword
+    );
+
+    if (result) {
+      return res.status(200).json({ message: "Password changed successfully" });
+    } else {
+      return res.status(400).json({ message: "Invalid old password" });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error changing password",
+      error: (error as Error).message,
+    });
   }
 };
